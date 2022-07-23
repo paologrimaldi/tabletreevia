@@ -1,0 +1,171 @@
+
+  
+            <nb-layout *ngIf="gamePreparation">
+            
+                <nb-sidebar>
+                   <nb-sidebar-header>
+             <h4>Options</h4>
+                  </nb-sidebar-header>
+                    <button fullWidth style="margin-bottom: 10px;margin-top: 20px;" nbButton (click)="this.newGame = true">New game</button> <br/>
+              <!--             <button nbButton>Continuar juego</button> -->
+                          <button  style="margin-bottom: 10px"  fullWidth hero status="success" nbButton [disabled]="participants.length <= 1" (click)="startGame()">Start</button>
+           
+                          <a href="https://www.buymeacoffee.com/paologrimaldi" target="_blank" ><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" height="48" width="215"></a>
+                 
+
+                        </nb-sidebar>
+                    <nb-layout-column>
+
+                        <nb-card *ngIf="!this.newGame">
+                            <nb-card-header><h4>Welcome to Table Treevia</h4>
+                          </nb-card-header>
+                            <nb-card-body class="family" >
+                                <span class="paragraph">Doing quizzes is a great way to learn facts, test your knowledge,
+                                    and have fun. This is not an online game, quite the opposite, it's intended to be played with family members or friends over the table, face to face! <br />  <b class="subtitle">That is how good trivias should be played.</b></span>
+                          
+                                  <p class="paragraph">Data used for the trivia questions in this game is provided by the Open Trivia Database <a href="https://opentdb.com/"></a> and is used under the creative commons Attribution-ShareAlike licence. I would like to extend my heartfelt appreciation for the folks at <a href="https://www.pixeltailgames.com/">PIXELTAIL GAMES LLC.</a> for creating and mantaining this database and we encourage all players to actively contribute with trivia questions.</p>
+                                  <img height="100px" src="/assets/img/opentrivia.png" />
+                                </nb-card-body>
+                                </nb-card>
+
+                              <div *ngIf="this.newGame" class="options">
+                                <nb-card size="medium" style="width: 380px;" >
+                                  <nb-card-header><h5>Add players</h5></nb-card-header>
+                                  <nb-card-body>
+                                    <span class="caption">At least two players are required for this game, there is currently no maximum number.</span>
+                                  <input type="text" style="margin-bottom: 10px;" nbInput fullWidth fieldSize="medium" placeholder="Player name" [(ngModel)]="newParticipant">
+                                    <button style="margin-bottom: 10px;" nbButton (click)="addParticipant()">Add player</button>
+                                <br />
+                      
+                             
+                                <nb-list>
+                                  <nb-list-item *ngFor="let user of participants">
+                      
+                                    <nb-user [name]="user.name" [title]="user.title">
+                                    </nb-user>
+                                  </nb-list-item>
+                                </nb-list>
+                                  </nb-card-body>
+                                </nb-card>
+
+                                <nb-card size="medium" style="width: 380px; margin-left: 10px;" >
+                                  <nb-card-header><h5>Configure categories</h5></nb-card-header>
+                                
+                                
+                             
+                                <nb-list>
+                                  <nb-list-item *ngFor="let category of categories">
+                                    <nb-toggle status="basic" [(checked)]="category.enabled" (checkedChange)="checkChanged($event,category.id)">{{category.name}}</nb-toggle>
+                                  </nb-list-item>
+                                </nb-list>
+                                 
+                                </nb-card>
+                                <nb-card size="medium" style="width: 380px; margin-left: 10px;" >
+                                  <nb-card-header><h5>Configure time control</h5></nb-card-header>
+                                  <nb-card-body>
+                                    <span class="caption">The game can be configured without time controls for a slow paced, enjoyable afternoon with the family, 30 seconds for a challenging game and 10 seconds for a fast paced action packed trivia.</span>
+                                    <nb-radio-group [(value)]="selectedTime">
+                                      <nb-radio [value]="0">No time restriction</nb-radio>
+                                      <nb-radio [value]="30">30 seconds</nb-radio>
+                                      <nb-radio [value]="10">10 seconds</nb-radio>
+                                    </nb-radio-group>
+                                
+                                  </nb-card-body>
+                                </nb-card>
+                              </div>
+                     
+
+
+                    </nb-layout-column>
+            </nb-layout>
+       
+
+
+
+            <nb-layout *ngIf="!gamePreparation">
+                <nb-sidebar>
+                    <nb-card size="medium" style="margin-top: 20px;">
+                        <nb-card-header>
+                          Scoreboard
+                        </nb-card-header>
+                        <nb-list>
+                          <nb-list-item *ngFor="let participant of participants">
+                            <nb-user [name]="participant.name" [title]="participant.points + ' points'"></nb-user>
+                          </nb-list-item>
+
+
+                        </nb-list>
+
+                        <button style="margin-bottom: 10px;margin-top: 20px;" hero status="danger" nbButton (click)="restart()">Restart game</button> 
+                      </nb-card>
+                </nb-sidebar>
+                <nb-layout-column><h3 *ngIf="selectedCategory == null" style="margin-top: 0;margin-left: 20px; margin-bottom: 0;">{{this.participants[this.counter].name}}  chooses category</h3>
+               
+            
+               
+                            <div class="categories" style="width: 100%;" [hidden]="selectedCategory !== null" >
+                              <div  *ngFor="let cat of categories">
+                                <app-game-category *ngIf="cat.enabled" (onSelect)="onSelect($event)" [Category]="cat"></app-game-category>
+                              </div>
+                               
+                            </div>
+                 
+                            <div *ngIf="selectedCategory !== null" class="subcategoryContent">
+                          <nb-card [nbSpinner]="questionLoading" size="medium" style="flex-grow: 2; margin-right: 10px;"  >
+                            <nb-card-header>
+                               <h4>For {{selectedCategory.tier}} points!!</h4>
+                            </nb-card-header>
+                            <nb-card-body>
+                          
+                              
+                              <countdown #cd *ngIf="selectedTime > 0" [config]="config"  class="custom-style" (event)="countDownFinished($event)">Time remaining</countdown>
+
+
+                                        <h6  >Your question is: <br/> <span class="subtitle" [innerHTML]="currentQuestion"> </span></h6>
+
+
+                                       
+                           
+                                
+                             
+
+                            </nb-card-body>
+                          </nb-card>
+
+                          <nb-card size="medium" style="flex-grow: 1; margin-right: 10px;">
+                            <nb-card-header>{{this.failedquestioncounter == null ? this.participants[this.counter].name:this.participants[this.failedquestioncounter].name }} chooses an answer</nb-card-header>
+                            <nb-card-body>
+                               
+                                <nb-list style="width: 100%;">
+                                    <nb-list-item *ngFor="let response of possibleResponses; let i = index" >
+                                       
+                                        <button nbButton fullWidth status="success" [disabled]="response.disabled"  (click)="guessAnswer(response.response,i)"> <nb-icon icon="bulb-outline"></nb-icon> {{response.response}}</button>
+                                    </nb-list-item>
+                                  
+                                   
+
+                                  </nb-list>
+
+                                <nb-actions>
+                            
+                              
+                                   
+
+                                  </nb-actions>
+
+                            </nb-card-body>
+                          </nb-card>
+                        </div>
+                 
+    </nb-layout-column>
+             
+               </nb-layout>
+                
+                
+      
+
+
+
+
+
+

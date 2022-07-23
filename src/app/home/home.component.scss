@@ -1,0 +1,57 @@
+h1,h2,h3,h4,h5,h6,p,nb-card-header
+{
+    font-family: 'Questrial', sans-serif;
+}
+
+.main-content
+{display: flex;
+flex-direction: row;
+justify-content: space-evenly;}
+
+.options
+{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.categories{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+[hidden] {
+    display: none !important;
+  }
+
+  .subcategoryContent
+  {
+    display: flex;
+flex-direction: row;
+justify-content:flex-start;
+  }
+
+  .family
+  {
+    background-image: '/assets/img/questions.jpg';
+   background-repeat: no-repeat;
+   
+  }
+
+  :host ::ng-deep .custom-style {
+    font-size: 22px;
+    font-family: 'Questrial', sans-serif;
+    .item {
+      padding-left: 4px;
+      &:nth-child(1) {
+        color: rgb(199, 66, 0);
+      }
+      &:nth-child(2) {
+        color: rgb(45, 0, 170);
+      }
+      &:nth-child(3) {
+        color: rgb(207, 7, 147);
+      }
+    }
+  }
