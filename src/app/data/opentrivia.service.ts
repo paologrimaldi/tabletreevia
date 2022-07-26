@@ -10,7 +10,7 @@ import { Question, QuestionResult } from '../question.interface';
 })
 export class OpentriviaService {
 
-  private token;
+  private token = null;
 
   constructor(  private http: HttpClient) { }
 
@@ -32,10 +32,18 @@ export class OpentriviaService {
   }
 
   getQuestionByCategory(id,difficulty): Observable<QuestionResult> {
-    return this.http.get<QuestionResult>('https://opentdb.com/api.php?amount=1&category=' + id + '&difficulty=' + difficulty + '&token=' + this.token)
+    if(this.token) {
+      return this.http.get<QuestionResult>('https://opentdb.com/api.php?amount=1&category=' + id + '&difficulty=' + difficulty + '&token=' + this.token)
       .pipe( //
         catchError(this.handleError<QuestionResult>('getQuestion', null))
       );
+    }
+    else
+    {
+
+      catchError(this.handleError<QuestionResult>('getQuestion', null))
+    }
+
   }
   setToken(token)
   {
@@ -47,7 +55,7 @@ export class OpentriviaService {
   
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
-  
+  alert(error);
       // TODO: better job of transforming error for user consumption
       console.log(`${operation} failed: ${error.message}`);
   

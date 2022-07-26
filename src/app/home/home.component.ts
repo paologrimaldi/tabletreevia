@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NbToastrService } from '@nebular/theme';
+import { NbSidebarService, NbToastrService } from '@nebular/theme';
 import { CountdownComponent, CountdownConfig } from 'ngx-countdown';
 import { Category, CategorySelection } from '../category.interface';
 import { OpentriviaService } from '../data/opentrivia.service';
@@ -61,7 +61,9 @@ public subcategories = ['World War II','The Vikings','Famous Ships and Commander
 this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.categories = data; for (let index = 0; index < this.categories.length; index++) {
   this.categories[index].enabled = true;
   
-}});
+}},(err)=> {
+  this.toaster.warning(err);
+});
   }
 
   startGame()
@@ -118,6 +120,8 @@ console.log(this.participants);
       this.shuffle(this.possibleResponses);
       this.questionLoading= false;
       if(this.selectedTime > 0) this.countdown.begin();
+    },(err)=> {
+      this.toaster.warning(err);
     }
      
      );
@@ -162,7 +166,7 @@ console.log(this.participants);
       this.possibleResponses = [];
       this.currentQuestion = '';
       this.failedquestioncounter = null;
-      if(this.counter < this.participants.length -1)
+      if(this.counter < this.participants.length - 1)
       {
         this.counter = this.counter + 1;
       }
@@ -174,9 +178,23 @@ console.log(this.participants);
     else
     {
       
-
+      if(this.failedquestioncounter == null)
+      {
+        //its first time fail
         this.failedquestioncounter = this.counter;
-        if(this.failedquestioncounter < this.participants.length -1)
+         if(this.failedquestioncounter < this.participants.length - 1)
+         {
+           this.failedquestioncounter = this.failedquestioncounter + 1;
+         }
+           else
+           {
+             this.failedquestioncounter = 0;
+           }
+      }
+      else
+      {
+        //its repeated fail
+        if(this.failedquestioncounter < this.participants.length - 1)
         {
           this.failedquestioncounter = this.failedquestioncounter + 1;
         }
@@ -185,6 +203,9 @@ console.log(this.participants);
             this.failedquestioncounter = 0;
           }
    
+      }
+     
+  
         
       this.toaster.danger('You have not chosen the correct response and ' + this.selectedCategory.tier + ' points are up for grabs by ' + this.participants[this.failedquestioncounter].name + '!!', 'Incorrect!!!');
       this.possibleResponses[index].disabled = true;
@@ -225,19 +246,24 @@ countDownFinished(event)
 
 if(event.action == "done")
 {
-  this.failedquestioncounter = this.counter;
-  if(this.failedquestioncounter < this.participants.length -1)
-  {
-    this.failedquestioncounter = this.failedquestioncounter + 1;
-  }
-    else
+if(this.failedquestioncounter == null)
     {
-      this.failedquestioncounter = 0;
+      this.failedquestioncounter = this.counter;
+      if(this.failedquestioncounter < this.participants.length)
+      {
+        this.failedquestioncounter = this.failedquestioncounter + 1;
+      }
+        else
+        {
+          this.failedquestioncounter = 0;
+        }
+        this.failedquestioncounter = null;
+      
+        this.toaster.danger('You have not chosen the correct response in your allowed time ' + this.selectedCategory.tier + ' points are up for grabs by ' + this.participants[this.failedquestioncounter].name + '!!', 'Time is up!!!');
     }
+}
 
-  
-    this.toaster.danger('You have not chosen the correct response in your allowed time ' + this.selectedCategory.tier + ' points are up for grabs by ' + this.participants[this.failedquestioncounter].name + '!!', 'Time is up!!!');
 }
-}
+
 
 }
