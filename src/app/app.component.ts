@@ -16,7 +16,7 @@ export class AppComponent {
 
   toggle() {
     
-    this.sidebarService.toggle(true);
+    this.sidebarService.toggle(false);
     
     return false;
   }
