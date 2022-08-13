@@ -35,7 +35,7 @@ import { NgFireworksModule } from '@fireworks-js/angular';
     FormsModule, 
     NbIconModule,
     NbSidebarModule.forRoot(),
-    RouterModule.forRoot([]),
+    RouterModule.forRoot([], { relativeLinkResolution: 'legacy' }),
     HttpClientModule,
     NbToastrModule.forRoot(),
     NbToggleModule,
