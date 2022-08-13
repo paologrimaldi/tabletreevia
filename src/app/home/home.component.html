@@ -83,6 +83,7 @@
 
 
             <nb-layout *ngIf="!gamePreparation">
+              <div *ngIf="gameOn">
                 <nb-sidebar>
                     <nb-card size="medium" style="margin-top: 20px;">
                         <nb-card-header>
@@ -99,7 +100,10 @@
                         <button style="margin-bottom: 10px;margin-top: 20px;" hero status="danger" nbButton (click)="restart()">Restart game</button> 
                       </nb-card>
                 </nb-sidebar>
-                <nb-layout-column><h3 *ngIf="selectedCategory == null" style="margin-top: 0;margin-left: 20px; margin-bottom: 0;">{{this.participants[this.counter].name}}  chooses category</h3>
+                <nb-layout-column>
+                  
+                  
+                  <h3 *ngIf="selectedCategory == null" style="margin-top: 0;margin-left: 20px; margin-bottom: 0;">{{this.participants[this.counter].name}}  chooses category</h3>
                
             
                
@@ -157,8 +161,16 @@
                           </nb-card>
                         </div>
                  
-    </nb-layout-column>
-             
+
+
+
+                     </nb-layout-column>
+                    </div>
+                    <div *ngIf="!gameOn">
+                      <h1>The winner is {{winner}}</h1>
+                      <button style="margin-bottom: 10px;margin-top: 20px;" hero status="danger" nbButton (click)="restart()">Restart game</button> 
+                      <ng-fireworks [options]="options" #fireworks ></ng-fireworks>
+                    </div>
                </nb-layout>
                 
                 

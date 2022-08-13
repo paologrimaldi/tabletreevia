@@ -29,7 +29,7 @@ export class GameCategoryComponent implements OnInit {
       this.tiers.splice(index, 1); // 2nd parameter means remove one item only
     }
  
-    let selection : CategorySelection = {tier: tier, category: this.Category}
+    let selection : CategorySelection = {tier: tier, category: this.Category, remaining: this.tiers.length}
       this.onSelect.emit(selection);
       
   }

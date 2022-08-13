@@ -1,3 +1,4 @@
+import { trigger } from '@angular/animations';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NbSidebarService, NbToastrService } from '@nebular/theme';
 import { CountdownComponent, CountdownConfig } from 'ngx-countdown';
@@ -5,6 +6,9 @@ import { Category, CategorySelection } from '../category.interface';
 import { OpentriviaService } from '../data/opentrivia.service';
 import { QuestionResult } from '../question.interface';
 import { Token } from '../token.interface';
+import { FireworksComponent } from '@fireworks-js/angular';
+import type { FireworksProps } from '@fireworks-js/angular'
+
 declare var require: any
 
 @Component({
@@ -13,7 +17,7 @@ declare var require: any
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-
+  @ViewChild('fireworks', { static: false }) private fireworks: FireworksComponent;
   @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
  
   config: CountdownConfig = {
@@ -27,6 +31,8 @@ export class HomeComponent implements OnInit {
     },
     
   };
+public gameOn = true;
+public winner = '';
 public newGame = false;
 public participants = [];
 public newParticipant;
@@ -34,6 +40,10 @@ public gamePreparation = true;
 public counter = 0;
 public selectedTime = 0;
 public categories : Category[]=[];
+options: FireworksProps = {
+  opacity: 0.5
+}
+
 public subcategories = ['World War II','The Vikings','Famous Ships and Commanders','Kings and Queens','Ancient Egypt','The Cold War','Castles','Medieval Europe','The Tudors','Famous People In History'];
 
   selectedCategory: CategorySelection = null;
@@ -90,16 +100,21 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
   addParticipant()
   {
     let obj = {name: this.newParticipant, title: "Player " + (this.participants.length + 1), points: 0};
-    console.log(obj);
+   
     this.participants.push(obj);
-    
-console.log(this.participants);
     this.newParticipant = null;
   }
 
 
-   onSelect(cat)
+   onSelect(cat: CategorySelection)
    {
+    //If category has no remaining items remove from categories
+    if(cat.remaining == 0)
+    {
+     let i = this.categories.indexOf(cat.category);
+      this.categories.splice(i,1);
+    }
+
     this.questionLoading= true;
     this.selectedCategory = cat;
     let difficulty = this.selectedCategory.tier <= 200 ? 'easy' : this.selectedCategory.tier <= 400 ? 'medium' : 'hard';
@@ -165,6 +180,16 @@ console.log(this.participants);
       this.displayAnswer = false;
       this.possibleResponses = [];
       this.currentQuestion = '';
+
+      //if categories is empty declare winner
+      if(this.categories.length == 0)
+      {
+        this.winner = this.participants.reduce(function(prev, current) {
+          return (prev.y > current.y) ? prev : current
+             }).name;
+
+      }
+
       this.failedquestioncounter = null;
       if(this.counter < this.participants.length - 1)
       {
@@ -224,6 +249,7 @@ console.log(this.participants);
     this.displayAnswer = false;
     this.participants = [];
     this.possibleResponses = [];
+    this.gameOn = false;
    }
 
    

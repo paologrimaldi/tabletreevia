@@ -13,7 +13,7 @@ import { GameCategoryComponent } from './game-category/game-category.component';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { CountdownModule } from 'ngx-countdown';
-
+import { NgFireworksModule } from '@fireworks-js/angular';
 
 @NgModule({
   declarations: [
@@ -42,6 +42,7 @@ import { CountdownModule } from 'ngx-countdown';
     NbRadioModule,
     CountdownModule,
     NbSpinnerModule,
+    NgFireworksModule
   ],
   providers: [],
   bootstrap: [AppComponent]

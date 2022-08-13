@@ -10,5 +10,6 @@ export interface CategoryResponse {
 
 export interface CategorySelection {
     tier: number,
-    category: Category
+    category: Category,
+    remaining: number
 } 
