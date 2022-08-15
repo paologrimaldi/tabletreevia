@@ -2,7 +2,7 @@
   
             <nb-layout *ngIf="gamePreparation">
             
-                <nb-sidebar responsive>
+                <nb-sidebar [collapsedBreakpoints]="['xs','is','sm', 'md']" [compactedBreakpoints]="[]" responsive>
                    <nb-sidebar-header>
              <h4>Options</h4>
                   </nb-sidebar-header>
@@ -48,8 +48,8 @@
                                   </nb-card-body>
                                 </nb-card>
 
-                                <nb-card size="medium" style="width: 380px; margin-left: 10px;" >
-                                  <nb-card-header><h5>Configure categories</h5></nb-card-header>
+                                <nb-card size="medium" style="width: 380px; margin-left: 10px; " >
+                                  <nb-card-header style="display: flex;flex-direction: row; justify-content: space-between;"><h5>Configure categories</h5>      <nb-toggle status="basic" [checked]="true" (checkedChange)="toggleAll($event)"></nb-toggle></nb-card-header>
                                 
                                 
                              
@@ -83,7 +83,7 @@
 
 
             <nb-layout *ngIf="!gamePreparation">
-              <div *ngIf="gameOn">
+           
                 <nb-sidebar>
                     <nb-card size="medium" style="margin-top: 20px;">
                         <nb-card-header>
@@ -101,14 +101,14 @@
                       </nb-card>
                 </nb-sidebar>
                 <nb-layout-column>
-                  
+                  <div *ngIf="gameOn">
                   
                   <h3 *ngIf="selectedCategory == null" style="margin-top: 0;margin-left: 20px; margin-bottom: 0;">{{this.participants[this.counter].name}}  chooses category</h3>
                
             
                
                             <div class="categories" style="width: 100%;" [hidden]="selectedCategory !== null" >
-                              <div  *ngFor="let cat of categories">
+                              <div  *ngFor="let cat of gameCategories">
                                 <app-game-category *ngIf="cat.enabled" (onSelect)="onSelect($event)" [Category]="cat"></app-game-category>
                               </div>
                                
@@ -163,14 +163,15 @@
                  
 
 
-
+                      </div>
+                      <div *ngIf="!gameOn">
+                        <h1>The winner is {{winner}}</h1>
+                        <button style="margin-bottom: 10px;margin-top: 20px;" hero status="danger" nbButton (click)="restart()">Restart game</button> 
+                        <ng-fireworks [options]="options" #fireworks ></ng-fireworks>
+                      </div>
                      </nb-layout-column>
-                    </div>
-                    <div *ngIf="!gameOn">
-                      <h1>The winner is {{winner}}</h1>
-                      <button style="margin-bottom: 10px;margin-top: 20px;" hero status="danger" nbButton (click)="restart()">Restart game</button> 
-                      <ng-fireworks [options]="options" #fireworks ></ng-fireworks>
-                    </div>
+               
+                   
                </nb-layout>
                 
                 

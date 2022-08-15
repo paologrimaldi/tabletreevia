@@ -53,6 +53,7 @@ public subcategories = ['World War II','The Vikings','Famous Ships and Commander
   currentQuestion: string;
   failedquestioncounter: number = null;
   questionLoading: boolean;
+  gameCategories: Category[] = [];
 
   constructor(private opentrivia: OpentriviaService, private toaster: NbToastrService) { }
 
@@ -78,9 +79,16 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
 
   startGame()
   {
-    this.gamePreparation = false;
-    this.opentrivia.getSessionToken().subscribe((data:Token)=> {this.opentrivia.setToken(data.token);});
 
+    this.opentrivia.getSessionToken().subscribe((data:Token)=> {
+
+
+      this.gamePreparation = false;
+      this.opentrivia.setToken(data.token);
+    
+      this.gameCategories = this.categories.filter((c)=> c.enabled == true);
+    });
+    //TODO filter categories to working categories so we can know when a player wins
     if(this.selectedTime > 0)
     { 
       this.config = {
@@ -111,8 +119,8 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
     //If category has no remaining items remove from categories
     if(cat.remaining == 0)
     {
-     let i = this.categories.indexOf(cat.category);
-      this.categories.splice(i,1);
+     let i = this.gameCategories.indexOf(cat.category);
+      this.gameCategories.splice(i,1);
     }
 
     this.questionLoading= true;
@@ -182,12 +190,12 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
       this.currentQuestion = '';
 
       //if categories is empty declare winner
-      if(this.categories.length == 0)
+      if(this.gameCategories.length == 0)
       {
         this.winner = this.participants.reduce(function(prev, current) {
           return (prev.y > current.y) ? prev : current
              }).name;
-
+             this.gameOn = false;
       }
 
       this.failedquestioncounter = null;
@@ -249,7 +257,8 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
     this.displayAnswer = false;
     this.participants = [];
     this.possibleResponses = [];
-    this.gameOn = false;
+    this.gameOn = true;
+    this.gameCategories = [];
    }
 
    
@@ -263,6 +272,14 @@ checkChanged(val,id)
 {
   let index = this.categories.map(function(e) { return e.id; }).indexOf(id);
   this.categories[index].enabled = val;
+}
+
+toggleAll(val)
+{
+  this.categories.forEach(element => {
+      element.enabled  = val;
+  });
+
 }
 
 
