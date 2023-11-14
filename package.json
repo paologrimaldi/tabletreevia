@@ -21,7 +21,7 @@
     "@angular/platform-browser": "~14.1.2",
     "@angular/platform-browser-dynamic": "~14.1.2",
     "@angular/router": "~14.1.2",
-    "@fireworks-js/angular": "^2.0.0",
+    "@fireworks-js/angular": "^2.10.7",
     "@google-cloud/translate": "^7.0.0",
     "@nebular/eva-icons": "9.0.3",
     "@nebular/theme": "^9.0.3",

@@ -1,13 +1,18 @@
 import { trigger } from '@angular/animations';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NbSidebarService, NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbSidebarService, NbToastrService } from '@nebular/theme';
 import { CountdownComponent, CountdownConfig } from 'ngx-countdown';
 import { Category, CategorySelection } from '../category.interface';
 import { OpentriviaService } from '../data/opentrivia.service';
 import { QuestionResult } from '../question.interface';
 import { Token } from '../token.interface';
-import { FireworksComponent } from '@fireworks-js/angular';
-import type { FireworksProps } from '@fireworks-js/angular'
+import type {
+  FireworksDirective,
+  FireworksOptions
+} from '@fireworks-js/angular';
+import { PersistenceService } from '../data/persistence.service';
+import { SavedialogComponent } from '../savedialog/savedialog.component';
+import { ContinuedialogComponent } from '../continuedialog/continuedialog.component';
 
 declare var require: any
 
@@ -17,7 +22,7 @@ declare var require: any
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  @ViewChild('fireworks', { static: false }) private fireworks: FireworksComponent;
+  @ViewChild('fireworks', { static: false }) private fireworks: FireworksDirective;
   @ViewChild('cd', { static: false }) private countdown: CountdownComponent;
  
   config: CountdownConfig = {
@@ -40,7 +45,7 @@ public gamePreparation = true;
 public counter = 0;
 public selectedTime = 0;
 public categories : Category[]=[];
-options: FireworksProps = {
+options: FireworksOptions = {
   opacity: 0.5
 }
 
@@ -54,8 +59,9 @@ public subcategories = ['World War II','The Vikings','Famous Ships and Commander
   failedquestioncounter: number = null;
   questionLoading: boolean;
   gameCategories: Category[] = [];
+  sessionToken: string;
 
-  constructor(private opentrivia: OpentriviaService, private toaster: NbToastrService) { }
+  constructor(private opentrivia: OpentriviaService, private toaster: NbToastrService, private dialogService: NbDialogService, private mongoSv: PersistenceService) { }
 
   ngOnInit(): void {
    window.addEventListener("beforeunload", function (e) {
@@ -85,8 +91,13 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
 
       this.gamePreparation = false;
       this.opentrivia.setToken(data.token);
-    
+      this.sessionToken = data.token;
       this.gameCategories = this.categories.filter((c)=> c.enabled == true);
+
+      //initialize tiers
+      this.gameCategories.forEach(element => {
+        element.tiers = [100,200,300,400,500];
+      });
     });
     //TODO filter categories to working categories so we can know when a player wins
     if(this.selectedTime > 0)
@@ -103,6 +114,37 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
       };
 
     }
+  }
+
+  continueGame()
+  {
+    this.dialogService.open(ContinuedialogComponent, {
+    }).onClose.subscribe((response) => {
+      
+      const data = response.document;
+
+
+      this.participants = data.participants;
+   
+      this.gameCategories = data.gameCategories;
+      this.selectedTime = data.selectedTime;
+      this.selectedCategory = data.selectedCategory;
+      this.counter = data.counter;
+      this.failedquestioncounter = data.failedquestioncounter;
+      this.gameOn = data.gameOn;
+ 
+      this.newGame = data.newGame;
+      this.newParticipant = data.newParticipant;
+      this.gamePreparation = data.gamePreparation;
+      this.currentQResult = data.currentQResult;
+      this.possibleResponses = data.possibleResponses;
+      this.currentQuestion = data.currentQuestion;
+ 
+      this.config = data.config;
+      this.options = data.options;
+      this.sessionToken = data.sessionToken;
+      this.opentrivia.setToken(data.sessionToken);
+    });
   }
 
   addParticipant()
@@ -152,6 +194,38 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
    }
 
 
+   onReloadQuestion()
+   {
+
+
+    this.questionLoading= true;
+
+    let difficulty = this.selectedCategory.tier <= 200 ? 'easy' : this.selectedCategory.tier <= 400 ? 'medium' : 'hard';
+    this.possibleResponses = [];
+    this.opentrivia.getQuestionByCategory(this.selectedCategory.category.id,difficulty).subscribe(async (data:QuestionResult) =>
+     {
+     
+      this.currentQResult = data;
+      this.currentQuestion =  decodeURI(this.currentQResult.results[0].question);
+
+      
+
+      this.currentQResult.results[0].incorrect_answers.forEach(element => {
+        let obj = {disabled: false, response: element};
+        this.possibleResponses.push(obj);
+      });
+  
+      this.possibleResponses.push({disabled: false, response: this.currentQResult.results[0].correct_answer});
+      this.shuffle(this.possibleResponses);
+      this.questionLoading= false;
+      if(this.selectedTime > 0) this.countdown.begin();
+            },(err)=> {
+              this.toaster.warning(err);
+            }
+     
+     );
+
+   }
 
    public shuffle(array) {
     let currentIndex = array.length,  randomIndex;
@@ -261,6 +335,40 @@ this.opentrivia.getTriviaCategories().subscribe((data:Category[])=> {this.catego
     this.gameCategories = [];
    }
 
+   saveToDb()
+   {
+
+    const persistenceObj = {participants: this.participants, gameCategories: this.gameCategories, selectedTime: this.selectedTime,  displayAnswer: this.displayAnswer,
+      selectedCategory: this.selectedCategory, counter: this.counter, failedquestioncounter: this.failedquestioncounter, 
+      gameOn: this.gameOn,  newGame: this.newGame,  sessionToken: this.sessionToken,
+      newParticipant: this.newParticipant, gamePreparation: this.gamePreparation, currentQResult: this.currentQResult,
+       possibleResponses: this.possibleResponses, currentQuestion: this.currentQuestion, config: this.config, options: this.options}
+
+
+
+       this.dialogService.open(SavedialogComponent, {
+        context: {
+          data: persistenceObj
+        }});
+/* 
+     const postObj = { "dataSource": "Cluster0",
+     "database": "tabletreevia",
+     "collection": "session",
+     "document": persistenceObj}  
+
+
+       this.mongoSv.authenticateToMongoDB().subscribe((data)=> {
+        console.log(data);
+        this.mongoSv.saveJsonToMongoDB(postObj, data.access_token).subscribe((data)=> {
+
+
+          this.toaster.success('Game saved to MongoDB', 'Success');
+        });
+       } ); */
+      
+
+
+   }
    
 showAnswer()
 {

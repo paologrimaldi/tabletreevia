@@ -1,0 +1,25 @@
+<nb-card>
+    <nb-card-header>Continue Game</nb-card-header>
+
+    <nb-card-body >
+        <label>Email</label>
+        <input required type="email" style="margin-bottom: 10px;" nbInput fullWidth fieldSize="medium" placeholder="ejemplo@gmail.com" [(ngModel)]="email">
+
+<br /><br />
+        <label>Password</label>
+        <input required type="password" style="margin-bottom: 10px;" nbInput fullWidth fieldSize="medium" placeholder="Password..." [(ngModel)]="pass">
+
+        <br /><br />    
+
+
+        <label>ID</label>
+        <input required type="text" style="margin-bottom: 10px;" nbInput fullWidth fieldSize="medium"  [(ngModel)]="ID">
+
+<br /><br />    
+
+     <button class="savebutton" [disabled]="!email || !pass || !ID" (click)="continueGame()"  nbButton fullWidth>Send</button>
+
+    </nb-card-body>
+
+
+</nb-card>

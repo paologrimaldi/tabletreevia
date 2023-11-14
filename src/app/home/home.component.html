@@ -9,7 +9,7 @@
                     <button fullWidth style="margin-bottom: 10px;margin-top: 20px;" nbButton (click)="this.newGame = true">New game</button> <br/>
               <!--             <button nbButton>Continuar juego</button> -->
                           <button  style="margin-bottom: 10px"  fullWidth hero status="success" nbButton [disabled]="participants.length <= 1" (click)="startGame()">Start</button>
-           
+                          <button  style="margin-bottom: 10px"  fullWidth hero status="info"  nbButton (click)="continueGame()">Continue</button>
                           <a href="https://www.buymeacoffee.com/paologrimaldi" target="_blank" ><img src="https://cdn.buymeacoffee.com/buttons/default-blue.png" alt="Buy Me A Coffee" height="48" width="215"></a>
                  
 
@@ -34,7 +34,7 @@
                                   <nb-card-body>
                                     <span class="caption">At least two players are required for this game, there is currently no maximum number.</span>
                                   <input type="text" style="margin-bottom: 10px;" nbInput fullWidth fieldSize="medium" placeholder="Player name" [(ngModel)]="newParticipant">
-                                    <button style="margin-bottom: 10px;" nbButton (click)="addParticipant()">Add player</button>
+                                    <button style="margin-bottom: 10px;" [disabled]="!newParticipant" nbButton (click)="addParticipant()">Add player</button>
                                 <br />
                       
                              
@@ -98,6 +98,7 @@
                         </nb-list>
 
                         <button style="margin-bottom: 10px;margin-top: 20px;" hero status="danger" nbButton (click)="restart()">Restart game</button> 
+                        <button style="margin-bottom: 10px;margin-top: 20px;" hero status="primary" nbButton (click)="saveToDb()">Save game</button> 
                       </nb-card>
                 </nb-sidebar>
                 <nb-layout-column>
@@ -150,14 +151,13 @@
 
                                   </nb-list>
 
-                                <nb-actions>
-                            
-                              
-                                   
-
-                                  </nb-actions>
+                          
 
                             </nb-card-body>
+                            <nb-card-footer>
+                              <button style="margin-bottom: 10px;margin-top: 20px;" hero status="warning" nbButton (click)="onReloadQuestion()">Reload</button> 
+
+                            </nb-card-footer>
                           </nb-card>
                         </div>
                  
@@ -167,7 +167,8 @@
                       <div *ngIf="!gameOn">
                         <h1>The winner is {{winner}}</h1>
                         <button style="margin-bottom: 10px;margin-top: 20px;" hero status="danger" nbButton (click)="restart()">Restart game</button> 
-                        <ng-fireworks [options]="options" #fireworks ></ng-fireworks>
+                        <button style="margin-bottom: 10px;margin-top: 20px;" hero status="success" nbButton (click)="saveToDb()">Save game</button> 
+                        <ng-fireworks [options]="options" class="fireworks" #fireworks="ngFireworks" ></ng-fireworks>
                       </div>
                      </nb-layout-column>
                

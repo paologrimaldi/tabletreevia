@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbThemeModule, NbLayoutModule, NbCardModule, NbButtonModule, NbInputModule, NbInputDirective, NbListModule, NbUserModule, NbActionsModule, NbSidebarModule, NbIconModule, NbToastrModule, NbToggleModule, NbRadioModule, NbSpinnerModule, } from '@nebular/theme';
+import { NbThemeModule, NbLayoutModule, NbCardModule, NbButtonModule, NbInputModule, NbInputDirective, NbListModule, NbUserModule, NbActionsModule, NbSidebarModule, NbIconModule, NbToastrModule, NbToggleModule, NbRadioModule, NbSpinnerModule, NbDialogModule, } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { HomeComponent } from './home/home.component';
 import { RouterModule } from '@angular/router';
@@ -14,10 +14,12 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { CountdownModule } from 'ngx-countdown';
 import { NgFireworksModule } from '@fireworks-js/angular';
+import { SavedialogComponent } from './savedialog/savedialog.component';
+import { ContinuedialogComponent } from './continuedialog/continuedialog.component';
 
 @NgModule({
   declarations: [
-    AppComponent, HomeComponent, GameCategoryComponent
+    AppComponent, HomeComponent, GameCategoryComponent, SavedialogComponent, ContinuedialogComponent
   ],
   imports: [
     BrowserModule,
@@ -42,9 +44,11 @@ import { NgFireworksModule } from '@fireworks-js/angular';
     NbRadioModule,
     CountdownModule,
     NbSpinnerModule,
-    NgFireworksModule
+    NgFireworksModule,
+    NbDialogModule.forRoot(),
   ],
   providers: [],
+  entryComponents: [SavedialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

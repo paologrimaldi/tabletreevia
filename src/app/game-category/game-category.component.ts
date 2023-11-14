@@ -11,7 +11,7 @@ export class GameCategoryComponent implements OnInit {
 	@Input() public Category: Category;
 	@Output() onSelect = new EventEmitter<CategorySelection>();
   
-  public tiers = [100,200,300,400,500];
+ //lift state of tiers public tiers = [100,200,300,400,500];
   //100 = verdadero y falso y Multiple choice: Easy
   //200 = Multiple choice: Easy
   //300 = Medium Multiple Choice and true and false
@@ -24,12 +24,12 @@ export class GameCategoryComponent implements OnInit {
 
 
   selectTier(tier)
-  {const index = this.tiers.indexOf(tier);
+  {const index = this.Category.tiers.indexOf(tier);
     if (index > -1) { // only splice array when item is found
-      this.tiers.splice(index, 1); // 2nd parameter means remove one item only
+      this.Category.tiers.splice(index, 1); // 2nd parameter means remove one item only
     }
  
-    let selection : CategorySelection = {tier: tier, category: this.Category, remaining: this.tiers.length}
+    let selection : CategorySelection = {tier: tier, category: this.Category, remaining: this.Category.tiers.length}
       this.onSelect.emit(selection);
       
   }

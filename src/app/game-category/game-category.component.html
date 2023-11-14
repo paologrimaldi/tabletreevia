@@ -2,8 +2,8 @@
     <nb-card-header><h5>{{Category.name}}</h5></nb-card-header>
     <nb-card-body class="list">
         <nb-list>
-            <nb-list-item *ngFor="let tier of tiers;let i = index" [attr.data-index]="i">
-                <button (click)="selectTier(tier)" [disabled]="i > 0 && tiers.length != 1" nbButton fullWidth 
+            <nb-list-item *ngFor="let tier of Category.tiers;let i = index" [attr.data-index]="i">
+                <button (click)="selectTier(tier)" [disabled]="i > 0 && Category.tiers.length != 1" nbButton fullWidth 
                     [status]="tier < 300 ? 'success': tier == 300 && tier <= 400 ? 'warning': 'danger'">{{'For ' + tier + ' points'}}</button>
             </nb-list-item>
           </nb-list>

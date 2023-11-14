@@ -1,0 +1,28 @@
+<nb-card>
+    <nb-card-header>Save game progress</nb-card-header>
+
+
+    <nb-card-body *ngIf="!gameID">
+        <p>If you would like a user to save your games email me at paologrimaldi@gmail.com and I will create one for you!</p>
+        <label>Email</label>
+        <input type="email" style="margin-bottom: 10px;" nbInput fullWidth fieldSize="medium" placeholder="example@gmail.com" [(ngModel)]="email">
+
+<br /><br />
+        <label>Password</label>
+        <input type="password" style="margin-bottom: 10px;" nbInput fullWidth fieldSize="medium" placeholder="Password..." [(ngModel)]="pass">
+
+
+
+     <button class="savebutton" (click)="saveGame()" nbButton fullWidth>Save</button>
+
+    </nb-card-body>
+
+
+    <nb-card-body *ngIf="gameID">
+       
+        <div class="jumbotron">
+            <h6>Game saved with the following ID: {{gameID}} save it to retrieve it later.</h6>
+        </div>
+
+    </nb-card-body>
+</nb-card>
