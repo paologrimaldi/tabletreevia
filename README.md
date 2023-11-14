@@ -9,6 +9,12 @@ Data used for the trivia questions in this game is provided by the Open Trivia D
 This game is created using Angular 14, Nebular components and some nice fireworks. For state persistance we are using a free MongoDB database stored in Atlas, API used https://opentdb.com/
 
 
+## Roadmap
+
+When I have time the plan is to create a global highscore, translation for questions using google translate API and perhaps include some AI tips with a wildcard for each user.
+
+
+
 
 ## Development server
 
