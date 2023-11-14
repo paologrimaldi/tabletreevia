@@ -1,6 +1,8 @@
 # TableTreevia
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.2.4.
+Doing quizzes is a great way to learn facts, test your knowledge, and have fun. This is not an online game, quite the opposite, it's intended to be played with family members or friends over the table, face to face!
+That is how good trivias should be played.
+Data used for the trivia questions in this game is provided by the Open Trivia Database and is used under the creative commons Attribution-ShareAlike licence. I would like to extend my heartfelt appreciation for the folks at PIXELTAIL GAMES LLC. for creating and mantaining this database and we encourage all players to actively contribute with trivia questions.
 
 ## Development server
 
